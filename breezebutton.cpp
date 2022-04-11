@@ -147,21 +147,7 @@ namespace Breeze
 
             const QRectF iconRect( geometry().topLeft(), m_iconSize );
             const auto c = decoration()->client().toStrongRef();
-            /*if (auto deco =  qobject_cast<Decoration*>(decoration())) {
-                const QPalette activePalette = KIconLoader::global()->customPalette();
-                QPalette palette = c->palette();
-                palette.setColor(QPalette::WindowText, deco->fontColor());
-                KIconLoader::global()->setCustomPalette(palette);
-                c->icon().paint(painter, iconRect.toRect());
-                if (activePalette == QPalette()) {
-                    KIconLoader::global()->resetPalette();
-                }    else {
-                    KIconLoader::global()->setCustomPalette(palette);
-                }
-            } else {*/
-                c->icon().paint(painter, iconRect.toRect());
-            //}
-
+            c->icon().paint(painter, iconRect.toRect());
 
         } else {
 
@@ -214,7 +200,6 @@ namespace Breeze
             outlineCol = QColor(0, 0, 0, 45);
         else
             outlineCol = QColor(0, 0, 0, 255 - 2 * qGray(d->titleBarColor().rgb()));
-            // outlineCol = QColor(255, 255, 255, 127);
     
 
         // render mark
@@ -238,206 +223,144 @@ namespace Breeze
 
                 case DecorationButtonType::Close:
                 {
-                    if (!d || d->internalSettings()->macOSButtons()) {
-                        QLinearGradient grad(QPointF(9, 2), QPointF(9, 16));
-                        if (d && qGray(d->titleBarColor().rgb()) > 100)
-                        {
-                            grad.setColorAt(0, isInactive ? inactiveCol
-                                                          : QColor(255, 92, 87));
-                            grad.setColorAt(1, isInactive ? inactiveCol
-                                                          : QColor(233, 84, 79));
-                        }
-                        else
-                        {
-                            grad.setColorAt(0, isInactive ? inactiveCol
-                                                          : QColor(250, 100, 102));
-                            grad.setColorAt(1, isInactive ? inactiveCol
-                                                          : QColor(230, 92, 94));
-                        }
-                        painter->setBrush( QBrush(grad) );
+                    QLinearGradient grad(QPointF(9, 2), QPointF(9, 16));
+                    if (d && qGray(d->titleBarColor().rgb()) > 100)
+                    {
+                        grad.setColorAt(0, isInactive ? inactiveCol
+                                                        : QColor(255, 92, 87));
+                        grad.setColorAt(1, isInactive ? inactiveCol
+                                                        : QColor(233, 84, 79));
+                    }
+                    else
+                    {
+                        grad.setColorAt(0, isInactive ? inactiveCol
+                                                        : QColor(250, 100, 102));
+                        grad.setColorAt(1, isInactive ? inactiveCol
+                                                        : QColor(230, 92, 94));
+                    }
+                    painter->setBrush( QBrush(grad) );
+                    painter->setPen( Qt::NoPen );
+                    painter->drawEllipse( QRectF( 2, 2, 14, 14 )  );
+
+                    painter->setPen( outline_pen );
+                    painter->setBrush( Qt::NoBrush );
+                    painter->drawEllipse( QRectF( 2, 2, 14, 14 )  );
+
+                    if( backgroundColor.isValid() )
+                    {
                         painter->setPen( Qt::NoPen );
-                        painter->drawEllipse( QRectF( 2, 2, 14, 14 )  );
+                        painter->setBrush( backgroundColor );
+                        qreal r = static_cast<qreal>(7)
+                                    + (isPressed() ? 0.0
+                                        : static_cast<qreal>(2) * m_animation->currentValue().toReal());
+                        QPointF c(static_cast<qreal>(9), static_cast<qreal>(9));
+                        painter->drawEllipse( c, r, r );
 
                         painter->setPen( outline_pen );
                         painter->setBrush( Qt::NoBrush );
-                        painter->drawEllipse( QRectF( 2, 2, 14, 14 )  );
-
-                        if( backgroundColor.isValid() )
-                        {
-                            painter->setPen( Qt::NoPen );
-                            painter->setBrush( backgroundColor );
-                            qreal r = static_cast<qreal>(7)
-                                      + (isPressed() ? 0.0
-                                         : static_cast<qreal>(2) * m_animation->currentValue().toReal());
-                            QPointF c(static_cast<qreal>(9), static_cast<qreal>(9));
-                            painter->drawEllipse( c, r, r );
-
-                            painter->setPen( outline_pen );
-                            painter->setBrush( Qt::NoBrush );
-                            painter->drawEllipse( c, r, r  );
-                        }
-
-
+                        painter->drawEllipse( c, r, r  );
                     }
-                    else {
-                        if( backgroundColor.isValid() )
-                        {
-                            painter->setPen( Qt::NoPen );
-                            painter->setBrush( backgroundColor );
-                            painter->drawEllipse( QRectF( 0, 0, 18, 18 ) );
-                        }
-                        painter->setPen( pen );
-                        painter->setBrush( Qt::NoBrush );
 
-                        painter->drawLine( QPointF( 5, 5 ), QPointF( 13, 13 ) );
-                        painter->drawLine( QPointF( 5, 13 ), QPointF( 13, 5 ) );
-                    }
                     break;
                 }
 
                 case DecorationButtonType::Maximize:
                 {
-                    if (!d || d->internalSettings()->macOSButtons()) {
-                        QLinearGradient grad(QPointF(9, 2), QPointF(9, 16));
-                        if (d && qGray(d->titleBarColor().rgb()) > 100)
-                        {
-                            grad.setColorAt(0, isChecked() ? isInactive ? inactiveCol
-                                                                        : QColor(67, 198, 176)
-                                                           : isInactive ? inactiveCol
-                                                                        : QColor(40, 211, 63));
-                            grad.setColorAt(1, isChecked() ? isInactive ? inactiveCol
-                                                                        : QColor(60, 178, 159)
-                                                           : isInactive ? inactiveCol
-                                                                        : QColor(36, 191, 57));
-                        }
-                        else
-                        {
-                            grad.setColorAt(0, isChecked() ? isInactive ? inactiveCol
-                                                                        : QColor(67, 198, 176)
-                                                           : isInactive ? inactiveCol
-                                                                        : QColor(124, 198, 67));
-                            grad.setColorAt(1, isChecked() ? isInactive ? inactiveCol
-                                                                        : QColor(60, 178, 159)
-                                                           : isInactive ? inactiveCol
-                                                                        : QColor(111, 178, 60));
-                        }
-                        painter->setBrush( QBrush(grad) );
+                    QLinearGradient grad(QPointF(9, 2), QPointF(9, 16));
+                    if (d && qGray(d->titleBarColor().rgb()) > 100)
+                    {
+                        grad.setColorAt(0, isChecked() ? isInactive ? inactiveCol
+                                                                    : QColor(67, 198, 176)
+                                                        : isInactive ? inactiveCol
+                                                                    : QColor(40, 211, 63));
+                        grad.setColorAt(1, isChecked() ? isInactive ? inactiveCol
+                                                                    : QColor(60, 178, 159)
+                                                        : isInactive ? inactiveCol
+                                                                    : QColor(36, 191, 57));
+                    }
+                    else
+                    {
+                        grad.setColorAt(0, isChecked() ? isInactive ? inactiveCol
+                                                                    : QColor(67, 198, 176)
+                                                        : isInactive ? inactiveCol
+                                                                    : QColor(124, 198, 67));
+                        grad.setColorAt(1, isChecked() ? isInactive ? inactiveCol
+                                                                    : QColor(60, 178, 159)
+                                                        : isInactive ? inactiveCol
+                                                                    : QColor(111, 178, 60));
+                    }
+                    painter->setBrush( QBrush(grad) );
+                    painter->setPen( Qt::NoPen );
+                    painter->drawEllipse( QRectF( 2, 2, 14, 14 ) );
+
+                    painter->setPen( outline_pen );
+                    painter->setBrush( Qt::NoBrush );
+                    painter->drawEllipse( QRectF( 2, 2, 14, 14 )  );
+
+                    if( backgroundColor.isValid() )
+                    {
                         painter->setPen( Qt::NoPen );
-                        painter->drawEllipse( QRectF( 2, 2, 14, 14 ) );
+                        painter->setBrush( backgroundColor );
+                        qreal r = static_cast<qreal>(7)
+                                    + (isPressed() ? 0.0
+                                        : static_cast<qreal>(2) * m_animation->currentValue().toReal());
+                        QPointF c(static_cast<qreal>(9), static_cast<qreal>(9));
+                        painter->drawEllipse( c, r, r );
 
                         painter->setPen( outline_pen );
                         painter->setBrush( Qt::NoBrush );
-                        painter->drawEllipse( QRectF( 2, 2, 14, 14 )  );
-
-                        if( backgroundColor.isValid() )
-                        {
-                            painter->setPen( Qt::NoPen );
-                            painter->setBrush( backgroundColor );
-                            qreal r = static_cast<qreal>(7)
-                                      + (isPressed() ? 0.0
-                                         : static_cast<qreal>(2) * m_animation->currentValue().toReal());
-                            QPointF c(static_cast<qreal>(9), static_cast<qreal>(9));
-                            painter->drawEllipse( c, r, r );
-
-                            painter->setPen( outline_pen );
-                            painter->setBrush( Qt::NoBrush );
-                            painter->drawEllipse( c, r, r  );
-                        }
+                        painter->drawEllipse( c, r, r  );
                     }
-                    else {
-                        if( backgroundColor.isValid() )
-                        {
-                            painter->setPen( Qt::NoPen );
-                            painter->setBrush( backgroundColor );
-                            painter->drawEllipse( QRectF( 0, 0, 18, 18 ) );
-                        }
-
-                        if (isHovered())
-                            pen.setWidthF( 1.2*qMax((qreal)1.0, 20/width ) );
-                        painter->setPen( pen );
-                        painter->setBrush( Qt::NoBrush );
-
-                        painter->drawPolyline(QPolygonF()
-                                                << QPointF(5, 8) << QPointF(5, 13) << QPointF(10, 13));
-                        if (isChecked())
-                            painter->drawRect(QRectF(8.0, 5.0, 5.0, 5.0));
-                        else {
-                            painter->drawPolyline(QPolygonF()
-                                                  << QPointF(8, 5) << QPointF(13, 5) << QPointF(13, 10));
-                        }
-
-                        if (isHovered())
-                            pen.setWidthF( PenWidth::Symbol*qMax((qreal)1.0, 20/width ) );
-                    }
+                   
                     break;
                 }
 
                 case DecorationButtonType::Minimize:
                 {
-                    if (!d || d->internalSettings()->macOSButtons()) {
-                        QLinearGradient grad(QPointF(9, 2), QPointF(9, 16));
-                        if (d && qGray(d->titleBarColor().rgb()) > 100)
-                        { // yellow isn't good with light backgrounds
-                            grad.setColorAt(0, isInactive ? inactiveCol
-                                                          : QColor(243, 176, 43));
-                            grad.setColorAt(1, isInactive ? inactiveCol
-                                                          : QColor(223, 162, 39));
-                        }
-                        else
-                        {
-                            grad.setColorAt(0, isInactive ? inactiveCol
-                                                          : QColor(237, 198, 81));
-                            grad.setColorAt(1, isInactive ? inactiveCol
-                                                          : QColor(217, 181, 74));
-                        }
-                        painter->setBrush( QBrush(grad) );
+                    QLinearGradient grad(QPointF(9, 2), QPointF(9, 16));
+                    if (d && qGray(d->titleBarColor().rgb()) > 100)
+                    { // yellow isn't good with light backgrounds
+                        grad.setColorAt(0, isInactive ? inactiveCol
+                                                        : QColor(243, 176, 43));
+                        grad.setColorAt(1, isInactive ? inactiveCol
+                                                        : QColor(223, 162, 39));
+                    }
+                    else
+                    {
+                        grad.setColorAt(0, isInactive ? inactiveCol
+                                                        : QColor(237, 198, 81));
+                        grad.setColorAt(1, isInactive ? inactiveCol
+                                                        : QColor(217, 181, 74));
+                    }
+                    painter->setBrush( QBrush(grad) );
+                    painter->setPen( Qt::NoPen );
+                    painter->drawEllipse( QRectF( 2, 2, 14, 14 ) );
+
+                    painter->setPen( outline_pen );
+                    painter->setBrush( Qt::NoBrush );
+                    painter->drawEllipse( QRectF( 2, 2, 14, 14 )  );
+
+                    if( backgroundColor.isValid() )
+                    {
                         painter->setPen( Qt::NoPen );
-                        painter->drawEllipse( QRectF( 2, 2, 14, 14 ) );
+                        painter->setBrush( backgroundColor );
+                        qreal r = static_cast<qreal>(7)
+                                    + (isPressed() ? 0.0
+                                        : static_cast<qreal>(2) * m_animation->currentValue().toReal());
+                        QPointF c(static_cast<qreal>(9), static_cast<qreal>(9));
+                        painter->drawEllipse( c, r, r );
 
                         painter->setPen( outline_pen );
                         painter->setBrush( Qt::NoBrush );
-                        painter->drawEllipse( QRectF( 2, 2, 14, 14 )  );
-
-                        if( backgroundColor.isValid() )
-                        {
-                            painter->setPen( Qt::NoPen );
-                            painter->setBrush( backgroundColor );
-                            qreal r = static_cast<qreal>(7)
-                                      + (isPressed() ? 0.0
-                                         : static_cast<qreal>(2) * m_animation->currentValue().toReal());
-                            QPointF c(static_cast<qreal>(9), static_cast<qreal>(9));
-                            painter->drawEllipse( c, r, r );
-
-                            painter->setPen( outline_pen );
-                            painter->setBrush( Qt::NoBrush );
-                            painter->drawEllipse( c, r, r  );
-                        }
+                        painter->drawEllipse( c, r, r  );
                     }
-                    else {
-                        if( backgroundColor.isValid() )
-                        {
-                            painter->setPen( Qt::NoPen );
-                            painter->setBrush( backgroundColor );
-                            painter->drawEllipse( QRectF( 0, 0, 18, 18 ) );
-                        }
-
-                        if (isHovered())
-                            pen.setWidthF( 1.2*qMax((qreal)1.0, 20/width ) );
-                        painter->setPen( pen );
-                        painter->setBrush( Qt::NoBrush );
-
-                        painter->drawLine( QPointF( 4, 9 ), QPointF( 14, 9 ) );
-
-                        if (isHovered())
-                            pen.setWidthF( PenWidth::Symbol*qMax((qreal)1.0, 20/width ) );
-                    }
+                   
                     break;
                 }
 
                 case DecorationButtonType::OnAllDesktops:
                 {
-                    bool macOSBtn(!d || d->internalSettings()->macOSButtons());
-                    if (macOSBtn && !isPressed()) {
+                    if (!isPressed()) {
                         QLinearGradient grad(QPointF(9, 2), QPointF(9, 16));
                         if (d && qGray(d->titleBarColor().rgb()) > 100)
                         { // yellow isn't good with light backgrounds
@@ -479,54 +402,23 @@ namespace Breeze
                             }
                         }
                     }
-                    if (!macOSBtn || isPressed() || isHovered() || isChecked()) {
+                    if (isPressed() || isHovered() || isChecked()) {
                         painter->setPen( Qt::NoPen );
-                        if( (!macOSBtn  || isPressed()) && backgroundColor.isValid() )
+                        if( (isPressed()) && backgroundColor.isValid() )
                         {
                             painter->setBrush( backgroundColor );
                             painter->drawEllipse( QRectF( 0, 0, 18, 18 ) );
                         }
                         painter->setBrush( foregroundColor );
 
-                        if (macOSBtn)
-                            painter->drawEllipse( QRectF( 6, 6, 6, 6 ) );
-                        else {
-                            if( isChecked()) {
-
-                                // outer ring
-                                painter->drawEllipse( QRectF( 3, 3, 12, 12 ) );
-
-                                // center dot
-                                QColor backgroundColor( this->backgroundColor() );
-                                if( !backgroundColor.isValid() && d ) backgroundColor = d->titleBarColor();
-
-                                if( backgroundColor.isValid() )
-                                {
-                                    painter->setBrush( backgroundColor );
-                                    painter->drawEllipse( QRectF( 8, 8, 2, 2 ) );
-                                }
-
-                            } else {
-
-                                painter->drawPolygon( QPolygonF()
-                                    << QPointF( 6.5, 8.5 )
-                                    << QPointF( 12, 3 )
-                                    << QPointF( 15, 6 )
-                                    << QPointF( 9.5, 11.5 ) );
-
-                                painter->setPen( pen );
-                                painter->drawLine( QPointF( 5.5, 7.5 ), QPointF( 10.5, 12.5 ) );
-                                painter->drawLine( QPointF( 12, 6 ), QPointF( 4.5, 13.5 ) );
-                            }
-                        }
+                        painter->drawEllipse( QRectF( 6, 6, 6, 6 ) );
                     }
                     break;
                 }
 
                 case DecorationButtonType::Shade:
                 {
-                    bool macOSBtn(!d || d->internalSettings()->macOSButtons());
-                    if (macOSBtn && !isPressed()) {
+                    if (!isPressed()) {
                         QLinearGradient grad(QPointF(9, 2), QPointF(9, 16));
                         if (d && qGray(d->titleBarColor().rgb()) > 100)
                         { // yellow isn't good with light backgrounds
@@ -568,8 +460,8 @@ namespace Breeze
                             }
                         }
                     }
-                    if (!macOSBtn || isPressed() || isHovered() || isChecked()) {
-                        if( (!macOSBtn  || isPressed()) && backgroundColor.isValid() )
+                    if ( isPressed() || isHovered() || isChecked()) {
+                        if( (isPressed()) && backgroundColor.isValid() )
                         {
                             painter->setPen( Qt::NoPen );
                             painter->setBrush( backgroundColor );
@@ -599,8 +491,7 @@ namespace Breeze
 
                 case DecorationButtonType::KeepBelow:
                 {
-                    bool macOSBtn(!d || d->internalSettings()->macOSButtons() || isChecked());
-                    if (macOSBtn && !isPressed()) {
+                    if ( isChecked() && !isPressed()) {
                         QLinearGradient grad(QPointF(9, 2), QPointF(9, 16));
                         if (d && qGray(d->titleBarColor().rgb()) > 100)
                         { // yellow isn't good with light backgrounds
@@ -642,8 +533,8 @@ namespace Breeze
                             }
                         }
                     }
-                    if (!macOSBtn || isPressed() || isHovered() || isChecked()) {
-                        if( (!macOSBtn  || isPressed()) && backgroundColor.isValid() )
+                    if ( isPressed() || isHovered() || isChecked()) {
+                        if( ( isPressed()) && backgroundColor.isValid() )
                         {
                             painter->setPen( Qt::NoPen );
                             painter->setBrush( backgroundColor );
@@ -652,28 +543,15 @@ namespace Breeze
                         painter->setPen( pen );
                         painter->setBrush( Qt::NoBrush );
 
-                        if (macOSBtn) {
-                            painter->drawPolyline( QPolygonF()
-                                << QPointF( 6, 6 )
-                                << QPointF( 9, 9 )
-                                << QPointF( 12, 6 ) );
+                        painter->drawPolyline( QPolygonF()
+                            << QPointF( 6, 6 )
+                            << QPointF( 9, 9 )
+                            << QPointF( 12, 6 ) );
 
-                            painter->drawPolyline( QPolygonF()
-                                << QPointF( 6, 10 )
-                                << QPointF( 9, 13 )
-                                << QPointF( 12, 10 ) );
-                        }
-                        else {
-                            painter->drawPolyline( QPolygonF()
-                                << QPointF( 5, 5 )
-                                << QPointF( 9, 9 )
-                                << QPointF( 13, 5 ) );
-
-                            painter->drawPolyline( QPolygonF()
-                                << QPointF( 5, 9 )
-                                << QPointF( 9, 13 )
-                                << QPointF( 13, 9 ) );
-                        }
+                        painter->drawPolyline( QPolygonF()
+                            << QPointF( 6, 10 )
+                            << QPointF( 9, 13 )
+                            << QPointF( 12, 10 ) );
                     }
                     break;
 
@@ -681,8 +559,7 @@ namespace Breeze
 
                 case DecorationButtonType::KeepAbove:
                 {
-                    bool macOSBtn(!d || d->internalSettings()->macOSButtons());
-                    if (macOSBtn && !isPressed()) {
+                    if (!isPressed()) {
                         QLinearGradient grad(QPointF(9, 2), QPointF(9, 16));
                         if (d && qGray(d->titleBarColor().rgb()) > 100)
                         { // yellow isn't good with light backgrounds
@@ -724,8 +601,8 @@ namespace Breeze
                             }
                         }
                     }
-                    if (!macOSBtn || isPressed() || isHovered() || isChecked()) {
-                        if( (!macOSBtn  || isPressed()) && backgroundColor.isValid() )
+                    if (isPressed() || isHovered() || isChecked()) {
+                        if( ( isPressed()) && backgroundColor.isValid() )
                         {
                             painter->setPen( Qt::NoPen );
                             painter->setBrush( backgroundColor );
@@ -734,28 +611,16 @@ namespace Breeze
                         painter->setPen( pen );
                         painter->setBrush( Qt::NoBrush );
 
-                        if (macOSBtn) {
-                            painter->drawPolyline( QPolygonF()
-                                << QPointF( 6, 8 )
-                                << QPointF( 9, 5 )
-                                << QPointF( 12, 8 ) );
+                        painter->drawPolyline( QPolygonF()
+                            << QPointF( 6, 8 )
+                            << QPointF( 9, 5 )
+                            << QPointF( 12, 8 ) );
 
-                            painter->drawPolyline( QPolygonF()
-                                << QPointF( 6, 12 )
-                                << QPointF( 9, 9 )
+                        painter->drawPolyline( QPolygonF()
+                            << QPointF( 6, 12 )
+                            << QPointF( 9, 9 )
                                 << QPointF( 12, 12 ) );
-                        }
-                        else {
-                            painter->drawPolyline( QPolygonF()
-                                << QPointF( 5, 9 )
-                                << QPointF( 9, 5 )
-                                << QPointF( 13, 9 ) );
 
-                            painter->drawPolyline( QPolygonF()
-                                << QPointF( 5, 13 )
-                                << QPointF( 9, 9 )
-                                << QPointF( 13, 13 ) );
-                        }
                     }
                     break;
                 }
@@ -763,8 +628,7 @@ namespace Breeze
 
                 case DecorationButtonType::ApplicationMenu:
                 {
-                    bool macOSBtn(!d || d->internalSettings()->macOSButtons());
-                    if (macOSBtn && !isPressed()) {
+                    if ( !isPressed()) {
                         QLinearGradient grad(QPointF(9, 2), QPointF(9, 16));
                         if (d && qGray(d->titleBarColor().rgb()) > 100)
                         { // yellow isn't good with light backgrounds
@@ -802,8 +666,8 @@ namespace Breeze
                             painter->drawEllipse( c, r, r  );
                         }
                     }
-                    if (!macOSBtn || isPressed() || isHovered()) {
-                        if( (!macOSBtn  || isPressed()) && backgroundColor.isValid() )
+                    if ( isPressed() || isHovered()) {
+                        if( ( isPressed()) && backgroundColor.isValid() )
                         {
                             painter->setPen( Qt::NoPen );
                             painter->setBrush( backgroundColor );
@@ -812,24 +676,16 @@ namespace Breeze
                         painter->setPen( pen );
                         painter->setBrush( Qt::NoBrush );
 
-                        if (macOSBtn) {
-                            painter->drawLine( QPointF( 4.5, 6 ), QPointF( 13.5, 6 ) );
-                            painter->drawLine( QPointF( 4.5, 9 ), QPointF( 13.5, 9 ) );
-                            painter->drawLine( QPointF( 4.5, 12 ), QPointF( 13.5, 12 ) );
-                        }
-                        else {
-                            painter->drawLine( QPointF( 3.5, 5 ), QPointF( 14.5, 5 ) );
-                            painter->drawLine( QPointF( 3.5, 9 ), QPointF( 14.5, 9 ) );
-                            painter->drawLine( QPointF( 3.5, 13 ), QPointF( 14.5, 13 ) );
-                        }
+                        painter->drawLine( QPointF( 4.5, 6 ), QPointF( 13.5, 6 ) );
+                        painter->drawLine( QPointF( 4.5, 9 ), QPointF( 13.5, 9 ) );
+                        painter->drawLine( QPointF( 4.5, 12 ), QPointF( 13.5, 12 ) );
                     }
                     break;
                 }
 
                 case DecorationButtonType::ContextHelp:
                 {
-                    bool macOSBtn(!d || d->internalSettings()->macOSButtons());
-                    if (macOSBtn && !isPressed()) {
+                    if (!isPressed()) {
                         QLinearGradient grad(QPointF(9, 2), QPointF(9, 16));
                         if (d && qGray(d->titleBarColor().rgb()) > 100)
                         { // yellow isn't good with light backgrounds
@@ -867,8 +723,8 @@ namespace Breeze
                             painter->drawEllipse( c, r, r  );
                         }
                     }
-                    if (!macOSBtn || isPressed() || isHovered()) {
-                        if( (!macOSBtn  || isPressed()) && backgroundColor.isValid() )
+                    if (isPressed() || isHovered()) {
+                        if( ( isPressed()) && backgroundColor.isValid() )
                         {
                             painter->setPen( Qt::NoPen );
                             painter->setBrush( backgroundColor );
@@ -901,55 +757,25 @@ namespace Breeze
     QColor Button::foregroundColor(const QColor& inactiveCol) const
     {
         auto d = qobject_cast<Decoration*>( decoration() );
-        if(!d || d->internalSettings()->macOSButtons()) {
-            QColor col;
-            if (d && !d->client().toStrongRef()->isActive()
-                && !isHovered() && !isPressed()
-                && m_animation->state() != QAbstractAnimation::Running)
-            {
-                int v = qGray(inactiveCol.rgb());
-                if (v > 127) v -= 127;
-                else v += 128;
-                col = QColor(v, v, v);
-            }
+        QColor col;
+        if (d && !d->client().toStrongRef()->isActive()
+            && !isHovered() && !isPressed()
+            && m_animation->state() != QAbstractAnimation::Running)
+        {
+            int v = qGray(inactiveCol.rgb());
+            if (v > 127) v -= 127;
+            else v += 128;
+            col = QColor(v, v, v);
+        }
+        else
+        {
+            if (d && qGray(d->titleBarColor().rgb()) > 100)
+                col = QColor(250, 250, 250);
             else
-            {
-                if (d && qGray(d->titleBarColor().rgb()) > 100)
-                    col = QColor(250, 250, 250);
-                else
-                    col = QColor(40, 40, 40);
-            }
-            return col;
+                col = QColor(40, 40, 40);
         }
-        else if( !d ) {
+        return col;
 
-            return QColor();
-
-        } else if( isPressed() ) {
-
-            return d->titleBarColor();
-
-        /*} else if( type() == DecorationButtonType::Close && d->internalSettings()->outlineCloseButton() ) {
-
-            return d->titleBarColor();*/
-
-        } else if( ( type() == DecorationButtonType::KeepBelow || type() == DecorationButtonType::KeepAbove ) && isChecked() ) {
-
-            return d->titleBarColor();
-
-        } else if( m_animation->state() == QAbstractAnimation::Running ) {
-
-            return KColorUtils::mix( d->fontColor(), d->titleBarColor(), m_opacity );
-
-        } else if( isHovered() ) {
-
-            return d->titleBarColor();
-
-        } else {
-
-            return d->fontColor();
-
-        }
 
     }
 
@@ -963,204 +789,136 @@ namespace Breeze
 
         }
 
-        if (d->internalSettings()->macOSButtons()) {
-            if( isPressed() ) {
+        if( isPressed() ) {
 
-                QColor col;
-                if( type() == DecorationButtonType::Close )
-                {
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = QColor(254, 73, 66);
-                    else
-                        col = QColor(240, 77, 80);
-                }
-                else if( type() == DecorationButtonType::Maximize)
-                {
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = isChecked() ? QColor(0, 188, 154) : QColor(7, 201, 33);
-                    else
-                        col = isChecked() ? QColor(0, 188, 154) : QColor(101, 188, 34);
-                }
-                else if( type() == DecorationButtonType::Minimize )
-                {
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = QColor(233, 160, 13);
-                    else
-                        col = QColor(227, 185, 59);
-                }
-                else if( type() == DecorationButtonType::ApplicationMenu ) {
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = QColor(220, 124, 64);
-                    else
-                        col = QColor(240, 139, 96);
-                }
-                else {
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = QColor(83, 121, 170);
-                    else
-                        col = QColor(110, 136, 180);
-                }
-                if (col.isValid())
-                    return col;
-                else return KColorUtils::mix( d->titleBarColor(), d->fontColor(), 0.3 );
+            QColor col;
+            if( type() == DecorationButtonType::Close )
+            {
+                if (qGray(d->titleBarColor().rgb()) > 100)
+                    col = QColor(254, 73, 66);
+                else
+                    col = QColor(240, 77, 80);
+            }
+            else if( type() == DecorationButtonType::Maximize)
+            {
+                if (qGray(d->titleBarColor().rgb()) > 100)
+                    col = isChecked() ? QColor(0, 188, 154) : QColor(7, 201, 33);
+                else
+                    col = isChecked() ? QColor(0, 188, 154) : QColor(101, 188, 34);
+            }
+            else if( type() == DecorationButtonType::Minimize )
+            {
+                if (qGray(d->titleBarColor().rgb()) > 100)
+                    col = QColor(233, 160, 13);
+                else
+                    col = QColor(227, 185, 59);
+            }
+            else if( type() == DecorationButtonType::ApplicationMenu ) {
+                if (qGray(d->titleBarColor().rgb()) > 100)
+                    col = QColor(220, 124, 64);
+                else
+                    col = QColor(240, 139, 96);
+            }
+            else {
+                if (qGray(d->titleBarColor().rgb()) > 100)
+                    col = QColor(83, 121, 170);
+                else
+                    col = QColor(110, 136, 180);
+            }
+            if (col.isValid())
+                return col;
+            else return KColorUtils::mix( d->titleBarColor(), d->fontColor(), 0.3 );
 
-            } else if( m_animation->state() == QAbstractAnimation::Running ) {
+        } else if( m_animation->state() == QAbstractAnimation::Running ) {
 
-                QColor col;
-                if( type() == DecorationButtonType::Close )
-                {
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = QColor(254, 95, 87);
-                    else
-                        col = QColor(240, 96, 97);
-                }
-                else if( type() == DecorationButtonType::Maximize)
-                {
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = isChecked() ? QColor(64, 188, 168) : QColor(39, 201, 63);
-                    else
-                        col = isChecked() ? QColor(64, 188, 168) : QColor(116, 188, 64);
-                }
-                else if( type() == DecorationButtonType::Minimize )
-                {
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = QColor(233, 172, 41);
-                    else
-                        col = QColor(227, 191, 78);
-                }
-                else if( type() == DecorationButtonType::ApplicationMenu ) {
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = QColor(220, 124, 64);
-                    else
-                        col = QColor(240, 139, 96);
-                }
-                else {
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = QColor(98, 141, 200);
-                    else
-                        col = QColor(128, 157, 210);
-                }
-                if (col.isValid())
-                    return col;
-                else {
+            QColor col;
+            if( type() == DecorationButtonType::Close )
+            {
+                if (qGray(d->titleBarColor().rgb()) > 100)
+                    col = QColor(254, 95, 87);
+                else
+                    col = QColor(240, 96, 97);
+            }
+            else if( type() == DecorationButtonType::Maximize)
+            {
+                if (qGray(d->titleBarColor().rgb()) > 100)
+                    col = isChecked() ? QColor(64, 188, 168) : QColor(39, 201, 63);
+                else
+                    col = isChecked() ? QColor(64, 188, 168) : QColor(116, 188, 64);
+            }
+            else if( type() == DecorationButtonType::Minimize )
+            {
+                if (qGray(d->titleBarColor().rgb()) > 100)
+                    col = QColor(233, 172, 41);
+                else
+                    col = QColor(227, 191, 78);
+            }
+            else if( type() == DecorationButtonType::ApplicationMenu ) {
+                if (qGray(d->titleBarColor().rgb()) > 100)
+                    col = QColor(220, 124, 64);
+                else
+                    col = QColor(240, 139, 96);
+            }
+            else {
+                if (qGray(d->titleBarColor().rgb()) > 100)
+                    col = QColor(98, 141, 200);
+                else
+                    col = QColor(128, 157, 210);
+            }
+            if (col.isValid())
+                return col;
+            else {
 
-                    col = d->fontColor();
-                    col.setAlpha( col.alpha()*m_opacity );
-                    return col;
-
-                }
-
-            } else if( isHovered() ) {
-
-                QColor col;
-                if( type() == DecorationButtonType::Close )
-                {
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = QColor(254, 95, 87);
-                    else
-                        col = QColor(240, 96, 97);
-                }
-                else if( type() == DecorationButtonType::Maximize)
-                {
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = isChecked() ? QColor(64, 188, 168) : QColor(39, 201, 63);
-                    else
-                        col = isChecked() ? QColor(64, 188, 168) : QColor(116, 188, 64);
-                }
-                else if( type() == DecorationButtonType::Minimize )
-                {
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = QColor(233, 172, 41);
-                    else
-                        col = QColor(227, 191, 78);
-                }
-                else if( type() == DecorationButtonType::ApplicationMenu ) {
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = QColor(220, 124, 64);
-                    else
-                        col = QColor(240, 139, 96);
-                }
-                else {
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = QColor(98, 141, 200);
-                    else
-                        col = QColor(128, 157, 210);
-                }
-                if (col.isValid())
-                    return col;
-                else return d->fontColor();
-
-            } else {
-
-                return QColor();
+                col = d->fontColor();
+                col.setAlpha( col.alpha()*m_opacity );
+                return col;
 
             }
-        }
-        else {
-            auto c = d->client().toStrongRef();
-            if( isPressed() ) {
 
-                if( type() == DecorationButtonType::Close ) return c->color( ColorGroup::Warning, ColorRole::Foreground );
+        } else if( isHovered() ) {
+
+            QColor col;
+            if( type() == DecorationButtonType::Close )
+            {
+                if (qGray(d->titleBarColor().rgb()) > 100)
+                    col = QColor(254, 95, 87);
                 else
-                {
-                    QColor col;
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = QColor(0, 0, 0, 190);
-                    else
-                        col = QColor(255, 255, 255, 210);
-                    return col;
-                }
-
-            } else if( ( type() == DecorationButtonType::KeepBelow || type() == DecorationButtonType::KeepAbove ) && isChecked() ) {
-
-                    QColor col;
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = QColor(0, 0, 0, 165);
-                    else
-                        col = QColor(255, 255, 255, 180);
-                    return col;
-
-            } else if( m_animation->state() == QAbstractAnimation::Running ) {
-
-                if( type() == DecorationButtonType::Close )
-                {
-
-                    QColor color( c->color( ColorGroup::Warning, ColorRole::Foreground ).lighter() );
-                    color.setAlpha( color.alpha()*m_opacity );
-                    return color;
-
-                } else {
-
-                    QColor col;
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = QColor(0, 0, 0, 165);
-                    else
-                        col = QColor(255, 255, 255, 180);
-                    col.setAlpha( col.alpha()*m_opacity );
-                    return col;
-
-                }
-
-            } else if( isHovered() ) {
-
-                if( type() == DecorationButtonType::Close ) return c->color( ColorGroup::Warning, ColorRole::Foreground ).lighter();
-                else
-                {
-
-                    QColor col;
-                    if (qGray(d->titleBarColor().rgb()) > 100)
-                        col = QColor(0, 0, 0, 165);
-                    else
-                        col = QColor(255, 255, 255, 180);
-                    return col;
-
-                }
-
-            } else {
-
-                return QColor();
-
+                    col = QColor(240, 96, 97);
             }
+            else if( type() == DecorationButtonType::Maximize)
+            {
+                if (qGray(d->titleBarColor().rgb()) > 100)
+                    col = isChecked() ? QColor(64, 188, 168) : QColor(39, 201, 63);
+                else
+                    col = isChecked() ? QColor(64, 188, 168) : QColor(116, 188, 64);
+            }
+            else if( type() == DecorationButtonType::Minimize )
+            {
+                if (qGray(d->titleBarColor().rgb()) > 100)
+                    col = QColor(233, 172, 41);
+                else
+                    col = QColor(227, 191, 78);
+            }
+            else if( type() == DecorationButtonType::ApplicationMenu ) {
+                if (qGray(d->titleBarColor().rgb()) > 100)
+                    col = QColor(220, 124, 64);
+                else
+                    col = QColor(240, 139, 96);
+            }
+            else {
+                if (qGray(d->titleBarColor().rgb()) > 100)
+                    col = QColor(98, 141, 200);
+                else
+                    col = QColor(128, 157, 210);
+            }
+            if (col.isValid())
+                return col;
+            else return d->fontColor();
+
+        } else {
+
+            return QColor();
+
         }
 
     }
